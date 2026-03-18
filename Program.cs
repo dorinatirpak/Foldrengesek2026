@@ -1,3 +1,6 @@
+using Földrengések2026.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Földrengések2026
 {
     public class Program
@@ -8,7 +11,8 @@ namespace Földrengések2026
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddDbContext<FoldrengesContext>(options =>
+                options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
