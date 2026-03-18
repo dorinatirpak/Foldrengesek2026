@@ -3,7 +3,7 @@ using Földrengések2026.Models;
 
 namespace Földrengések2026.Data
 {
-    public class FoldrengesContext
+    public class FoldrengesContext : DbContext
     {
         public FoldrengesContext(DbContextOptions<FoldrengesContext> options) : base(options)
         {

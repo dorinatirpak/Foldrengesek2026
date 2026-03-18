@@ -12,7 +12,7 @@ namespace Földrengések2026
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<FoldrengesContext>(options =>
-                options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
