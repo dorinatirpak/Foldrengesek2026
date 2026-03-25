@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<form asp-action="Index" method="get">
+    <p>
+        Szűrők:
+        <input type="text" name="nev" value="@ViewData["AktualisNevSzuro"]" placeholder="településnév" />
+        <input type="text" name="varmegye" value="@ViewData["AktualisVarmegyeSzuro"]" placeholder="vármegye" />
+        <input type="submit" value="Keresés" class="btn btn-primary" />
+    </p>
+</form>
 <table class="table">
     <thead>
         <tr>

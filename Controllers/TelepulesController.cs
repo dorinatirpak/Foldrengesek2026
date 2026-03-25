@@ -20,9 +20,22 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? nev, string? varmegye)
         {
-            return View(await _context.Telepulesek.ToListAsync());
+            var telepulesek = _context.Telepulesek.AsQueryable();
+            if (!string.IsNullOrEmpty(nev))
+            {
+                telepulesek = telepulesek
+                .Where(p => p.Nev!.ToLower().Contains(nev.ToLower()));
+                ViewData["AktualisNevSzuro"] = nev;
+            }
+            if (!string.IsNullOrEmpty(varmegye))
+            {
+                telepulesek = telepulesek
+                .Where(p => p.Varmegye!.ToLower().Contains(varmegye.ToLower()));
+                ViewData["AktualisVarmegyeSzuro"] = varmegye;
+            }
+            return View(await telepulesek.ToListAsync());
         }
 
         // GET: Telepules/Details/5

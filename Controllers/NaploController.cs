@@ -20,10 +20,27 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid)
         {
-            var foldrengesContext = _context.Naplok.Include(n => n.Telepules);
-            return View(await foldrengesContext.ToListAsync());
+            var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
+            if (datum.HasValue)
+            {
+                foldrengesek = foldrengesek
+                .Where(n => n.Datum == datum);
+                ViewData["AktualisDatumSzuro"] = datum.Value.ToString("yyyy-MM-dd");
+            }
+            if (telepulesid != null && telepulesid > 0)
+            {
+                foldrengesek = foldrengesek
+                .Where(b => b.TelepulesID == telepulesid);
+            }
+            ViewData["TelepulesID"] = new SelectList(
+            _context.Telepulesek,
+            "ID",
+            "Nev",
+            telepulesid ?? 0
+            );
+            return View(await foldrengesek.ToListAsync());
         }
 
         // GET: Naplo/Details/5
