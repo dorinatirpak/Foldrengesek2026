@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Index";
+    int currentPage = (int)ViewData["CurrentPage"]!;
+    int totalPages = (int)ViewData["TotalPages"]!;
 }
 
 <h1>Index</h1>
@@ -11,7 +13,7 @@
 </p>
 <form asp-action="Index" method="get">
     <p>
-        Szűrők:
+        Filters:
         <input type="text" name="nev" value="@ViewData["AktualisNevSzuro"]" placeholder="településnév" />
         <input type="text" name="varmegye" value="@ViewData["AktualisVarmegyeSzuro"]" placeholder="vármegye" />
         <input type="submit" value="Keresés" class="btn btn-primary" />
