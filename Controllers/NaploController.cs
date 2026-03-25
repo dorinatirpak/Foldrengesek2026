@@ -20,25 +20,31 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo
-        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid)
+        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? magnitudo)
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
+            // Dátum szűrés
             if (datum.HasValue)
             {
-                foldrengesek = foldrengesek
-                .Where(n => n.Datum == datum);
+                foldrengesek = foldrengesek.Where(n => n.Datum == datum);
                 ViewData["AktualisDatumSzuro"] = datum.Value.ToString("yyyy-MM-dd");
             }
+            // Település szűrés
             if (telepulesid != null && telepulesid > 0)
             {
-                foldrengesek = foldrengesek
-                .Where(b => b.TelepulesID == telepulesid);
+                foldrengesek = foldrengesek.Where(b => b.TelepulesID == telepulesid);
+            }
+            // ÚJ: Magnitúdó szűrés
+            if (magnitudo.HasValue)
+            {
+                foldrengesek = foldrengesek.Where(n => n.Magnitudo == magnitudo);
+                ViewData["MagnitudoSzuro"] = magnitudo; // Visszaadjuk a nézetnek, hogy benne maradjon az inputban
             }
             ViewData["TelepulesID"] = new SelectList(
-            _context.Telepulesek,
-            "ID",
-            "Nev",
-            telepulesid ?? 0
+                _context.Telepulesek,
+                "ID",
+                "Nev",
+                telepulesid ?? 0
             );
             return View(await foldrengesek.ToListAsync());
         }
