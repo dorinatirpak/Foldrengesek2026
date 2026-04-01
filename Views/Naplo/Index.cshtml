@@ -2,6 +2,19 @@
 
 @{
     ViewData["Title"] = "Index";
+    int totalCount = (int)ViewData["TotalCount"]!;
+
+    string ToggleDir(string column)
+    => (ViewData["CurrentSort"]?.ToString() == column &&
+        ViewData["CurrentDir"]?.ToString() == "asc")
+        ? "desc"
+        : "asc";
+
+    string SortIcon(string column)
+    {
+        if (ViewData["CurrentSort"]?.ToString() != column) return "";
+        return ViewData["CurrentDir"]?.ToString() == "asc" ? " ▲" : " ▼";
+    }
 }
 
 <h1>Index</h1>
@@ -9,62 +22,91 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<p>Összesen: <strong>@totalCount</strong> találat.</p>
+
 <form asp-action="Index" method="get">
     <p>
         Szűrők:
-        <input type="date" name="datum" value="@ViewData["AktualisDatumSzuro"]" placeholder="dátum" />    
+        <input type="date" name="datum" value="@ViewData["AktualisDatumSzuro"]" placeholder="dátum" />
         <select name="telepulesid" asp-items="ViewBag.TelepulesID">
             <option value="0">Minden település</option>
         </select>
-        <input type="number" step="0.1" name="magnitudo" value="@ViewData["MagnitudoSzuro"]" placeholder="Magnitúdó" />     
+        
+        <input type="number" step="0.1" name="minMagnitudo" value="@ViewData["MinMagnitudo"]" placeholder="Min. magnitúdó" />
+        <input type="number" step="0.1" name="maxMagnitudo" value="@ViewData["MaxMagnitudo"]" placeholder="Max. magnitúdó" />
+        
         <input type="submit" value="Keresés" class="btn btn-primary" />
     </p>
 </form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Datum)
+                <a asp-action="Index"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["AktualisTelepulesSzuro"]"
+                       asp-route-minMagnitudo="@ViewData["MinMagnitudo"]"
+                       asp-route-maxMagnitudo="@ViewData["MaxMagnitudo"]"
+                       asp-route-sort="datum"
+                       asp-route-dir="@ToggleDir("datum")">
+                    @Html.DisplayNameFor(model => model.Datum) @SortIcon("datum")
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ido)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Magnitudo)
+                <a asp-action="Index"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["AktualisTelepulesSzuro"]"
+                       asp-route-minMagnitudo="@ViewData["MinMagnitudo"]"
+                       asp-route-maxMagnitudo="@ViewData["MaxMagnitudo"]"
+                       asp-route-sort="magnitudo"
+                       asp-route-dir="@ToggleDir("magnitudo")">
+                    @Html.DisplayNameFor(model => model.Magnitudo) @SortIcon("magnitudo")
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Intenzitas)
+                <a asp-action="Index"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["AktualisTelepulesSzuro"]"
+                       asp-route-minMagnitudo="@ViewData["MinMagnitudo"]"
+                       asp-route-maxMagnitudo="@ViewData["MaxMagnitudo"]"
+                       asp-route-sort="intenzitas"
+                       asp-route-dir="@ToggleDir("intenzitas")">
+                    @Html.DisplayNameFor(model => model.Intenzitas) @SortIcon("intenzitas")
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Telepules)
+                <a asp-action="Index"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["AktualisTelepulesSzuro"]"
+                       asp-route-minMagnitudo="@ViewData["MinMagnitudo"]"
+                       asp-route-maxMagnitudo="@ViewData["MaxMagnitudo"]"
+                       asp-route-sort="telepules"
+                       asp-route-dir="@ToggleDir("telepules")">
+                    @Html.DisplayNameFor(model => model.Telepules) @SortIcon("telepules")
+                </a>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Datum)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Magnitudo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Intenzitas)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telepules.Nev)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Datum)</td>
+                <td>@Html.DisplayFor(modelItem => item.Ido)</td>
+                <td>@Html.DisplayFor(modelItem => item.Magnitudo)</td>
+                <td>@Html.DisplayFor(modelItem => item.Intenzitas)</td>
+                <td>@Html.DisplayFor(modelItem => item.Telepules.Nev)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

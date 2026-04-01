@@ -20,32 +20,65 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo
-        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? magnitudo)
+        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? minMagnitudo, double? maxMagnitudo, string sort = "datum", string dir = "desc")
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
+
             // Dátum szűrés
             if (datum.HasValue)
             {
                 foldrengesek = foldrengesek.Where(n => n.Datum == datum);
                 ViewData["AktualisDatumSzuro"] = datum.Value.ToString("yyyy-MM-dd");
             }
+
             // Település szűrés
             if (telepulesid != null && telepulesid > 0)
             {
                 foldrengesek = foldrengesek.Where(b => b.TelepulesID == telepulesid);
+                ViewData["AktualisTelepulesSzuro"] = telepulesid; // ÚJ: Elmentjük, hogy a nézetben visszakapjuk
             }
-            // ÚJ: Magnitúdó szűrés
-            if (magnitudo.HasValue)
+
+            // Minimum magnitúdó szűrés
+            if (minMagnitudo.HasValue)
             {
-                foldrengesek = foldrengesek.Where(n => n.Magnitudo == magnitudo);
-                ViewData["MagnitudoSzuro"] = magnitudo; // Visszaadjuk a nézetnek, hogy benne maradjon az inputban
+                foldrengesek = foldrengesek.Where(n => n.Magnitudo >= minMagnitudo);
+                ViewData["MinMagnitudo"] = minMagnitudo;
             }
+
+            // Maximum magnitúdó szűrés
+            if (maxMagnitudo.HasValue)
+            {
+                foldrengesek = foldrengesek.Where(n => n.Magnitudo <= maxMagnitudo);
+                ViewData["MaxMagnitudo"] = maxMagnitudo;
+            }
+
+            // Rendezés beállítása
+            foldrengesek = (sort, dir) switch
+            {
+                ("datum", "asc") => foldrengesek.OrderBy(n => n.Datum).ThenBy(n => n.Ido),
+                ("datum", "desc") => foldrengesek.OrderByDescending(n => n.Datum).ThenByDescending(n => n.Ido),
+                ("magnitudo", "asc") => foldrengesek.OrderBy(n => n.Magnitudo),
+                ("magnitudo", "desc") => foldrengesek.OrderByDescending(n => n.Magnitudo),
+                ("intenzitas", "asc") => foldrengesek.OrderBy(n => n.Intenzitas),
+                ("intenzitas", "desc") => foldrengesek.OrderByDescending(n => n.Intenzitas),
+                ("telepules", "asc") => foldrengesek.OrderBy(n => n.Telepules.Nev),
+                ("telepules", "desc") => foldrengesek.OrderByDescending(n => n.Telepules.Nev),
+                _ => foldrengesek.OrderByDescending(n => n.Datum)
+            };
+
+            ViewData["CurrentSort"] = sort;
+            ViewData["CurrentDir"] = dir;
+
+            int totalCount = await foldrengesek.CountAsync();
+            ViewData["TotalCount"] = totalCount;
+
             ViewData["TelepulesID"] = new SelectList(
                 _context.Telepulesek,
                 "ID",
                 "Nev",
                 telepulesid ?? 0
             );
+
             return View(await foldrengesek.ToListAsync());
         }
 

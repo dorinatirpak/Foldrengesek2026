@@ -20,7 +20,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules
-        public async Task<IActionResult> Index(string? nev, string? varmegye, int page = 1)
+        public async Task<IActionResult> Index(string? nev, string? varmegye, int page = 1, string sort = "nev", string dir = "asc")
         {
             var telepulesek = _context.Telepulesek.AsQueryable();
             if (!string.IsNullOrEmpty(nev))
@@ -35,15 +35,32 @@ namespace Földrengések2026.Controllers
                 .Where(p => p.Varmegye!.ToLower().Contains(varmegye.ToLower()));
                 ViewData["AktualisVarmegyeSzuro"] = varmegye;
             }
+
+            // Rendezés beállítása
+            telepulesek = (sort, dir) switch
+            {
+                ("nev", "desc") => telepulesek.OrderByDescending(p => p.Nev),
+                ("varmegye", "asc") => telepulesek.OrderBy(p => p.Varmegye),
+                ("varmegye", "desc") => telepulesek.OrderByDescending(p => p.Varmegye),
+                _ => telepulesek.OrderBy(p => p.Nev)
+            };
+
+            ViewData["CurrentSort"] = sort;
+            ViewData["CurrentDir"] = dir;
+
             int pageSize = 10; // ennyi elem egy oldalon
             int totalCount = await telepulesek.CountAsync();
+
             var items = await telepulesek
-            .OrderBy(p => p.Nev) // ⚠️ lapozásnál KÖTELEZŐ rendezni
+            // .OrderBy(p => p.Nev) // <-- EZT KIKOMMENTELTÜK, mert a fenti switch-case már elvégezte a rendezést!
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
             ViewData["CurrentPage"] = page;
+            ViewData["TotalCount"] = totalCount;
             ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+
             return View(items);
         }
 
@@ -72,8 +89,6 @@ namespace Földrengések2026.Controllers
         }
 
         // POST: Telepules/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Nev,Varmegye")] Telepules telepules)
@@ -104,8 +119,6 @@ namespace Földrengések2026.Controllers
         }
 
         // POST: Telepules/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Nev,Varmegye")] Telepules telepules)

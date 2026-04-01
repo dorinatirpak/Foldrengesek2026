@@ -4,6 +4,20 @@
     ViewData["Title"] = "Index";
     int currentPage = (int)ViewData["CurrentPage"]!;
     int totalPages = (int)ViewData["TotalPages"]!;
+    int totalCount = (int)ViewData["TotalCount"]!;
+
+    string ToggleDir(string column)
+    => (ViewData["CurrentSort"]?.ToString() == column &&
+        ViewData["CurrentDir"]?.ToString() == "asc")
+        ? "desc"
+        : "asc";
+
+    // ÚJ: Ikon generáló segédfüggvény
+    string SortIcon(string column)
+    {
+        if (ViewData["CurrentSort"]?.ToString() != column) return "";
+        return ViewData["CurrentDir"]?.ToString() == "asc" ? " ▲" : " ▼";
+    }
 }
 
 <h1>Index</h1>
@@ -11,6 +25,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 <form asp-action="Index" method="get">
     <p>
         Filters:
@@ -19,6 +34,8 @@
         <input type="submit" value="Keresés" class="btn btn-primary" />
     </p>
 </form>
+
+<p>Összesen: <strong>@totalCount</strong> találat.</p>
 
 <nav>
     <ul class="pagination">
@@ -29,7 +46,9 @@
                        asp-action="Index"
                        asp-route-page="@(currentPage - 1)"
                        asp-route-nev="@ViewData["AktualisNevSzuro"]"
-                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]">
+                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     Előző
                 </a>
             </li>
@@ -41,7 +60,9 @@
                        asp-action="Index"
                        asp-route-page="@i"
                        asp-route-nev="@ViewData["AktualisNevSzuro"]"
-                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]">
+                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     @i
                 </a>
             </li>
@@ -53,7 +74,9 @@
                        asp-action="Index"
                        asp-route-page="@(currentPage + 1)"
                        asp-route-nev="@ViewData["AktualisNevSzuro"]"
-                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]">
+                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     Következő
                 </a>
             </li>
@@ -65,29 +88,44 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Nev)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-nev="@ViewData["AktualisNevSzuro"]"
+                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]"
+                       asp-route-sort="nev"
+                       asp-route-dir="@ToggleDir("nev")">
+                    @Html.DisplayNameFor(model => model.Nev) @SortIcon("nev")
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Varmegye)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-nev="@ViewData["AktualisNevSzuro"]"
+                       asp-route-varmegye="@ViewData["AktualisVarmegyeSzuro"]"
+                       asp-route-sort="varmegye"
+                       asp-route-dir="@ToggleDir("varmegye")">
+                    @Html.DisplayNameFor(model => model.Varmegye) @SortIcon("varmegye")
+                </a>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nev)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Varmegye)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nev)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Varmegye)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

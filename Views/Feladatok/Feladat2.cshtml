@@ -1,0 +1,19 @@
+﻿@model IEnumerable<string>
+
+@{
+    ViewData["Title"] = "2. feladat";
+}
+
+<h1>Somogy megyei települések</h1>
+
+<ul>
+    @foreach (var telepules in Model)
+    {
+        <li>@telepules</li>
+    }
+</ul>
+
+<p>
+    <br />
+    <a asp-action="Index" class="btn btn-secondary">Vissza a feladatokhoz</a>
+</p>
