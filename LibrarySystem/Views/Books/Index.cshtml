@@ -1,0 +1,64 @@
+@model BookSearchViewModel
+@{ ViewData["Title"] = "Konyvek"; }
+
+<div class="page-header">
+    <h1>Konyvek</h1>
+    <a asp-action="Create" class="btn btn-primary">+ Uj konyv</a>
+</div>
+
+<div class="section-card">
+    <form asp-action="Search" method="post" class="search-bar">
+        <select name="SearchField" class="form-control form-control--sm">
+            <option value="Title"  selected="@(Model.SearchField=="Title")">Cim</option>
+            <option value="Author" selected="@(Model.SearchField=="Author")">Szerzo</option>
+            <option value="ISBN"   selected="@(Model.SearchField=="ISBN")">ISBN</option>
+            <option value="Id"     selected="@(Model.SearchField=="Id")">Azonosito</option>
+        </select>
+        <input type="text" name="SearchText" value="@Model.SearchText"
+               placeholder="Keresett szoveg..." class="form-control" />
+        <button type="submit" class="btn btn-primary">Kereses</button>
+        <a asp-action="Index" class="btn btn-outline">Visszaallitas</a>
+    </form>
+</div>
+
+<div class="section-card">
+    @if (!Model.Results.Any())
+    {
+        <p class="empty-state">Nem talalhato konyv a megadott feltetelekkel.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Szerzo</th>
+                    <th>Cim</th>
+                    <th>ISBN</th>
+                    <th>Ev</th>
+                    <th>Peldanyok</th>
+                    <th>Szabad</th>
+                    <th>Kolcsonozheto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model.Results)
+                {
+                    var avail = Model.AvailableCopies.GetValueOrDefault(book.Id, 0);
+                    <tr>
+                        <td class="mono">@book.Id</td>
+                        <td>@book.Author</td>
+                        <td><strong>@book.Title</strong></td>
+                        <td class="mono">@book.ISBN</td>
+                        <td>@book.Year</td>
+                        <td>@book.CopyCount</td>
+                        <td>
+                            <span class="badge @(avail > 0 ? "badge-success" : "badge-danger")">@avail</span>
+                        </td>
+                        <td>@(book.IsLoanable ? "Igen" : "Nem")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

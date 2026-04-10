@@ -1,0 +1,74 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using LibrarySystem.Models;
+using LibrarySystem.Services;
+
+namespace LibrarySystem.Controllers;
+
+public class AccountController : Controller
+{
+    private readonly DataService _data;
+    private const int MaxAttempts = 3;
+
+    public AccountController(DataService data)
+    {
+        _data = data;
+    }
+
+    [HttpGet]
+    public IActionResult Login()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Home");
+
+        var attempts = HttpContext.Session.GetInt32("LoginAttempts") ?? 0;
+        return View(new LoginViewModel { FailedAttempts = attempts });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        int attempts = HttpContext.Session.GetInt32("LoginAttempts") ?? 0;
+
+        if (attempts >= MaxAttempts)
+        {
+            model.ErrorMessage = "Tul sok sikertelen probalkozas. A program leall.";
+            model.FailedAttempts = attempts;
+            return View("Lockout");
+        }
+
+        var librarian = _data.Authenticate(model.Username, model.Password);
+        if (librarian == null)
+        {
+            attempts++;
+            HttpContext.Session.SetInt32("LoginAttempts", attempts);
+
+            if (attempts >= MaxAttempts)
+                return View("Lockout");
+
+            model.ErrorMessage = $"Hibas felhasznalonev vagy jelszo. ({attempts}/{MaxAttempts} probalkozas)";
+            model.FailedAttempts = attempts;
+            return View(model);
+        }
+
+        HttpContext.Session.Remove("LoginAttempts");
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, librarian.Username),
+            new(ClaimTypes.GivenName, librarian.FullName)
+        };
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login");
+    }
+}

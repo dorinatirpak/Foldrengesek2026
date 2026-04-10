@@ -1,0 +1,49 @@
+@model MemberSearchViewModel
+@{ ViewData["Title"] = "Tagok"; }
+
+<div class="page-header">
+    <h1>Konyvtari tagok</h1>
+</div>
+
+<div class="section-card">
+    @if (!Model.Results.Any())
+    {
+        <p class="empty-state">Nem talalhato tag.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nev</th>
+                    <th>Tipus</th>
+                    <th>Lakcim</th>
+                    <th>Elerhetoseg</th>
+                    <th>Max. konyv</th>
+                    <th>Kolcsonzesi ido</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model.Results)
+                {
+                    <tr>
+                        <td class="mono">@m.Id</td>
+                        <td><strong>@m.Name</strong></td>
+                        <td><span class="badge badge-info">@m.MemberTypeDisplay</span></td>
+                        <td>@m.Address</td>
+                        <td>@m.Contact</td>
+                        <td>@(m.MaxBooks == int.MaxValue ? "Korlatlan" : m.MaxBooks.ToString())</td>
+                        <td>@m.LoanDays nap</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="section-card">
+    <div class="alert alert-info">
+        A tagok szerkesztese, torlese es az uj tag felvetele a kovetkezo verzioban lesz elerheto.
+    </div>
+</div>

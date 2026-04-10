@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – Konyvtari Rendszer</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+@if (User.Identity?.IsAuthenticated == true)
+{
+<nav class="navbar">
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+        <span class="brand-icon">&#x2B21;</span> Konyvtar
+    </a>
+    <div class="nav-links">
+        <a asp-controller="Books"   asp-action="Index">Konyvek</a>
+        <a asp-controller="Members" asp-action="Index">Tagok</a>
+        <a asp-controller="Loans"   asp-action="Create" class="btn-primary-nav">+ Kolcsonzes</a>
+    </div>
+    <div class="nav-user">
+        <span>@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</span>
+        <a asp-controller="Account" asp-action="Logout" class="logout-link">Kilepes</a>
+    </div>
+</nav>
+}
+
+<main class="main-content">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning">@TempData["Warning"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">@TempData["Error"]</div>
+    }
+    @RenderBody()
+</main>
+
+<script src="~/js/site.js"></script>
+</body>
+</html>

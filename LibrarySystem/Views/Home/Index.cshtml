@@ -1,0 +1,97 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Fooldal"; }
+
+<div class="page-header">
+    <h1>Iranyitopult</h1>
+    <p class="page-subtitle">Udvozoljuk a konyvtari adminisztracios rendszerben</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">&#x1F4DA;</div>
+        <div class="stat-value">@Model.TotalBooks</div>
+        <div class="stat-label">Konyvek</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">&#x1F465;</div>
+        <div class="stat-value">@Model.TotalMembers</div>
+        <div class="stat-label">Tagok</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">&#x1F4D6;</div>
+        <div class="stat-value">@Model.ActiveLoans</div>
+        <div class="stat-label">Aktiv kolcsonzes</div>
+    </div>
+    <div class="stat-card @(Model.OverdueLoans > 0 ? "stat-card--warning" : "")">
+        <div class="stat-icon">&#x23F0;</div>
+        <div class="stat-value">@Model.OverdueLoans</div>
+        <div class="stat-label">Kesesben</div>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-header">
+        <h2>Legutobbi kolcsonzesek</h2>
+    </div>
+    @if (!Model.RecentLoans.Any())
+    {
+        <p class="empty-state">Meg nincsenek kolcsonzesek.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Konyv</th>
+                    <th>Tag</th>
+                    <th>Kolcsonzes datuma</th>
+                    <th>Visszahozas hatarideje</th>
+                    <th>Allapot</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var lv in Model.RecentLoans)
+                {
+                    <tr>
+                        <td>@lv.Book?.Title</td>
+                        <td>@lv.Member?.Name</td>
+                        <td>@lv.Loan.LoanDate.ToString("yyyy.MM.dd")</td>
+                        <td>@lv.Loan.DueDate.ToString("yyyy.MM.dd")</td>
+                        <td>
+                            @if (lv.Loan.IsReturned)
+                            {
+                                <span class="badge badge-success">Visszahozva</span>
+                            }
+                            else if (lv.Loan.IsOverdue)
+                            {
+                                <span class="badge badge-danger">Kesesben (@lv.Loan.OverdueDays nap)</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-info">Kolcsonozve</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="quick-actions">
+    <h2>Gyors muveletek</h2>
+    <div class="quick-actions-grid">
+        <a asp-controller="Books" asp-action="Create" class="quick-action-card">
+            <span>&#x2795;</span> Uj konyv felvetele
+        </a>
+        <a asp-controller="Loans" asp-action="Create" class="quick-action-card">
+            <span>&#x1F4CB;</span> Kolcsonzes rogzitese
+        </a>
+        <a asp-controller="Books" asp-action="Index" class="quick-action-card">
+            <span>&#x1F50D;</span> Konyvek keresese
+        </a>
+        <a asp-controller="Members" asp-action="Index" class="quick-action-card">
+            <span>&#x1F465;</span> Tagok megtekintese
+        </a>
+    </div>
+</div>
