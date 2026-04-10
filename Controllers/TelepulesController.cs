@@ -7,12 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Földrengések2026.Data;
 using Földrengések2026.Models;
+using Földrengések2026.Services;
 
 namespace Földrengések2026.Controllers
 {
     public class TelepulesController : Controller
     {
         private readonly FoldrengesContext _context;
+
+        private static readonly Dictionary<string, SortOption<Telepules>> TelepulesSortOptions = new()
+        {
+            ["nev"] = new SortOption<Telepules>(
+                q => q.OrderBy(p => p.Nev),
+                q => q.OrderByDescending(p => p.Nev)),
+            ["varmegye"] = new SortOption<Telepules>(
+                q => q.OrderBy(p => p.Varmegye),
+                q => q.OrderByDescending(p => p.Varmegye))
+        };
 
         public TelepulesController(FoldrengesContext context)
         {
@@ -23,36 +34,26 @@ namespace Földrengések2026.Controllers
         public async Task<IActionResult> Index(string? nev, string? varmegye, int page = 1, string sort = "nev", string dir = "asc")
         {
             var telepulesek = _context.Telepulesek.AsQueryable();
-            if (!string.IsNullOrEmpty(nev))
-            {
-                telepulesek = telepulesek
-                .Where(p => p.Nev!.ToLower().Contains(nev.ToLower()));
-                ViewData["AktualisNevSzuro"] = nev;
-            }
-            if (!string.IsNullOrEmpty(varmegye))
-            {
-                telepulesek = telepulesek
-                .Where(p => p.Varmegye!.ToLower().Contains(varmegye.ToLower()));
-                ViewData["AktualisVarmegyeSzuro"] = varmegye;
-            }
+
+            // Név szűrés
+            telepulesek = telepulesek.WhereContains(nev, p => p.Nev!);
+            if (!string.IsNullOrEmpty(nev)) ViewData["AktualisNevSzuro"] = nev;
+
+            // Vármegye szűrés
+            telepulesek = telepulesek.WhereContains(varmegye, p => p.Varmegye!);
+            if (!string.IsNullOrEmpty(varmegye)) ViewData["AktualisVarmegyeSzuro"] = varmegye;
 
             // Rendezés beállítása
-            telepulesek = (sort, dir) switch
-            {
-                ("nev", "desc") => telepulesek.OrderByDescending(p => p.Nev),
-                ("varmegye", "asc") => telepulesek.OrderBy(p => p.Varmegye),
-                ("varmegye", "desc") => telepulesek.OrderByDescending(p => p.Varmegye),
-                _ => telepulesek.OrderBy(p => p.Nev)
-            };
+            var sorted = telepulesek.ApplySorting(sort, dir, TelepulesSortOptions,
+                q => q.OrderBy(p => p.Nev));
 
             ViewData["CurrentSort"] = sort;
             ViewData["CurrentDir"] = dir;
 
-            int pageSize = 10; // ennyi elem egy oldalon
-            int totalCount = await telepulesek.CountAsync();
+            int pageSize = 10;
+            int totalCount = await sorted.CountAsync();
 
-            var items = await telepulesek
-            // .OrderBy(p => p.Nev) // <-- EZT KIKOMMENTELTÜK, mert a fenti switch-case már elvégezte a rendezést!
+            var items = await sorted
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
