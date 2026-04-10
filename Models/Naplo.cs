@@ -26,11 +26,15 @@ namespace Földrengések2026.Models
 
         [Required]
 
+        [Range(-2.0, 12.0, ErrorMessage = "A magnitúdó értéke -2.0 és 12.0 között kell legyen.")]
+
         [Display(Name = "Magnitúdó")]
 
         public double Magnitudo { get; set; }
 
         [Required]
+
+        [Range(0.0, 12.0, ErrorMessage = "Az intenzitás értéke 0.0 és 12.0 között kell legyen.")]
 
         [Display(Name = "Intenzitás")]
 

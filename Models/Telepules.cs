@@ -9,11 +9,15 @@ namespace Földrengések2026.Models
 
         [Required]
 
+        [StringLength(200, ErrorMessage = "A település neve legfeljebb 200 karakter lehet.")]
+
         [Display(Name = "Település név")]
 
         public string Nev { get; set; } = null!;
 
         [Required]
+
+        [StringLength(200, ErrorMessage = "A vármegye neve legfeljebb 200 karakter lehet.")]
 
         [Display(Name = "Vármegye")]
 
