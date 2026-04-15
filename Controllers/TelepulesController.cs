@@ -52,7 +52,7 @@ namespace Földrengések2026.Controllers
             int totalCount = await telepulesek.CountAsync();
 
             var items = await telepulesek
-            // .OrderBy(p => p.Nev) // <-- EZT KIKOMMENTELTÜK, mert a fenti switch-case már elvégezte a rendezést!
+            // .OrderBy(p => p.Nev) 
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

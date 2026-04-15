@@ -35,7 +35,7 @@ namespace Földrengések2026.Controllers
             if (telepulesid != null && telepulesid > 0)
             {
                 foldrengesek = foldrengesek.Where(b => b.TelepulesID == telepulesid);
-                ViewData["AktualisTelepulesSzuro"] = telepulesid; // ÚJ: Elmentjük, hogy a nézetben visszakapjuk
+                ViewData["AktualisTelepulesSzuro"] = telepulesid; 
             }
 
             // Minimum magnitúdó szűrés

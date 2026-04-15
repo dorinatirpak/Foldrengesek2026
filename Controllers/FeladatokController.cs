@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Földrengések2026.Data;
-using Földrengések2026.ViewModels; // <-- EZT ADD HOZZÁ A TETEJEHEZ!
+using Földrengések2026.ViewModels;
 using System.Linq;
 
 namespace Földrengések2026.Controllers
@@ -18,8 +18,6 @@ namespace Földrengések2026.Controllers
         {
             return View();
         }
-
-        // 16.1 2. feladat
         public IActionResult Feladat2()
         {
             var results = _context.Telepulesek
@@ -30,7 +28,6 @@ namespace Földrengések2026.Controllers
             return View(results);
         }
 
-        // 16.2 3. feladat
         public IActionResult Feladat3()
         {
             var results = _context.Telepulesek
@@ -44,7 +41,7 @@ namespace Földrengések2026.Controllers
                 .GroupBy(t => t.Varmegye)
                 .Select(g => new Feladat3ViewModel
                 {
-                    Varmegye = g.Key, // a mező, ami szerint csoportosítva van: Varmegye
+                    Varmegye = g.Key, 
                     Count = g.Count()
                 })
                 .OrderByDescending(t => t.Count);

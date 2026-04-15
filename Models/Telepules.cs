@@ -19,9 +19,6 @@ namespace Földrengések2026.Models
 
         public string Varmegye { get; set; } = null!;
 
-
-        // Navigáció: településhez tartozó naplóbejegyzések lekéréséhez:
-
         public virtual ICollection<Naplo>? Naplok { get; set; } = new List<Naplo>();
 
     }
