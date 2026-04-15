@@ -18,6 +18,7 @@ namespace Földrengések2026.Controllers
         {
             return View();
         }
+
         public IActionResult Feladat2()
         {
             var results = _context.Telepulesek
@@ -41,12 +42,27 @@ namespace Földrengések2026.Controllers
                 .GroupBy(t => t.Varmegye)
                 .Select(g => new Feladat3ViewModel
                 {
-                    Varmegye = g.Key, 
+                    Varmegye = g.Key,
                     Count = g.Count()
                 })
                 .OrderByDescending(t => t.Count);
 
             return View(results);
+        }
+        public IActionResult Feladat4()
+        {
+            var result = _context.Naplok
+                .Select(n => new Feladat4ViewModel
+                {
+                    Nev = n.Telepules!.Nev,
+                    Datum = n.Datum,
+                    Ido = n.Ido,
+                    Magnitudo = n.Magnitudo
+                })
+                .OrderByDescending(x => x.Magnitudo)
+                .FirstOrDefault();
+
+            return View(result);
         }
     }
 }

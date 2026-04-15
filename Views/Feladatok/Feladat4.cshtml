@@ -1,0 +1,25 @@
+﻿@model Földrengések2026.ViewModels.Feladat4ViewModel
+
+@{
+    ViewData["Title"] = "4. feladat";
+}
+
+<h1>Legnagyobb magnitúdójú esemény</h1>
+
+@if (Model != null)
+{
+    <ul class="list-group mt-3 mb-4 w-50">
+        <li class="list-group-item"><strong>Település:</strong> @Model.Nev</li>
+        <li class="list-group-item"><strong>Dátum:</strong> @Model.Datum.ToString("yyyy-MM-dd")</li>
+        <li class="list-group-item"><strong>Idő:</strong> @Model.Ido</li>
+        <li class="list-group-item"><strong>Magnitúdó:</strong> @Model.Magnitudo</li>
+    </ul>
+}
+else
+{
+    <p class="text-danger mt-3">Nincs megjeleníthető adat.</p>
+}
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Vissza a feladatokhoz</a>
+</p>

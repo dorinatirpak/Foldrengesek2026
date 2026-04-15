@@ -20,7 +20,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo
-        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? minMagnitudo, double? maxMagnitudo, string sort = "datum", string dir = "desc")
+        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? minMagnitudo, double? maxMagnitudo, string sort = "datum", string dir = "desc", int page = 1)
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
 
@@ -35,7 +35,7 @@ namespace Földrengések2026.Controllers
             if (telepulesid != null && telepulesid > 0)
             {
                 foldrengesek = foldrengesek.Where(b => b.TelepulesID == telepulesid);
-                ViewData["AktualisTelepulesSzuro"] = telepulesid; 
+                ViewData["AktualisTelepulesSzuro"] = telepulesid;
             }
 
             // Minimum magnitúdó szűrés
@@ -69,8 +69,18 @@ namespace Földrengések2026.Controllers
             ViewData["CurrentSort"] = sort;
             ViewData["CurrentDir"] = dir;
 
+            // --- Lapozás logikája ---
+            int pageSize = 10;
             int totalCount = await foldrengesek.CountAsync();
+
+            var items = await foldrengesek
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             ViewData["TotalCount"] = totalCount;
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
 
             ViewData["TelepulesID"] = new SelectList(
                 _context.Telepulesek,
@@ -79,7 +89,7 @@ namespace Földrengések2026.Controllers
                 telepulesid ?? 0
             );
 
-            return View(await foldrengesek.ToListAsync());
+            return View(items); 
         }
 
         // GET: Naplo/Details/5
