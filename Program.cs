@@ -1,5 +1,6 @@
 using Földrengések2026.Data;
 using Microsoft.EntityFrameworkCore;
+using Földrengések2026.Services;
 
 namespace Földrengések2026
 {
@@ -13,6 +14,7 @@ namespace Földrengések2026
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<FoldrengesContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
+            builder.Services.AddScoped<ILekerdezesiFeladatok, LekerdezesiFeladatok>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
