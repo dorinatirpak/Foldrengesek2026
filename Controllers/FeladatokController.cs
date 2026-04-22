@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Földrengések2026.Data;
+﻿using Földrengések2026.Data;
+using Földrengések2026.Services;
 using Földrengések2026.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
 namespace Földrengések2026.Controllers
@@ -8,6 +9,13 @@ namespace Földrengések2026.Controllers
     public class FeladatokController : Controller
     {
         private readonly FoldrengesContext _context;
+        private readonly ILekerdezesiFeladatok _queries;
+
+        public FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries)
+        {
+            _context = context;
+            _queries = queries;
+        }
 
         public FeladatokController(FoldrengesContext context)
         {
@@ -21,11 +29,7 @@ namespace Földrengések2026.Controllers
 
         public IActionResult Feladat2()
         {
-            var results = _context.Telepulesek
-                .Where(t => t.Varmegye == "Somogy")
-                .OrderBy(t => t.Nev)
-                .Select(t => t.Nev);
-
+            var results = _queries.SomogyTelepulesNevek();
             return View(results);
         }
 
