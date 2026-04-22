@@ -6,21 +6,10 @@ using System.Linq;
 
 namespace Földrengések2026.Controllers
 {
-    public class FeladatokController : Controller
+    public class FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries) : Controller
     {
-        private readonly FoldrengesContext _context;
-        private readonly ILekerdezesiFeladatok _queries;
-
-        public FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries)
-        {
-            _context = context;
-            _queries = queries;
-        }
-
-        public FeladatokController(FoldrengesContext context)
-        {
-            _context = context;
-        }
+        private readonly FoldrengesContext _context = context;
+        private readonly ILekerdezesiFeladatok _queries = queries;
 
         public IActionResult Index()
         {
@@ -35,55 +24,19 @@ namespace Földrengések2026.Controllers
 
         public IActionResult Feladat3()
         {
-            var results = _context.Telepulesek
-                .Join(_context.Naplok,
-                    telepules => telepules.ID,
-                    naplo => naplo.TelepulesID,
-                    (telepules, naplo) => new
-                    {
-                        telepules.Varmegye
-                    })
-                .GroupBy(t => t.Varmegye)
-                .Select(g => new Feladat3ViewModel
-                {
-                    Varmegye = g.Key,
-                    Count = g.Count()
-                })
-                .OrderByDescending(t => t.Count);
-
+            var results = _queries.VarmegyeiRengesSzamok();
             return View(results);
         }
+
         public IActionResult Feladat4()
         {
-            var result = _context.Naplok
-                .Select(n => new Feladat4ViewModel
-                {
-                    Nev = n.Telepules!.Nev,
-                    Datum = n.Datum,
-                    Ido = n.Ido,
-                    Magnitudo = n.Magnitudo
-                })
-                .OrderByDescending(x => x.Magnitudo)
-                .FirstOrDefault();
-
+            var result = _queries.LegnagyobbMagnitudo();
             return View(result);
         }
 
         public IActionResult Feladat5()
         {
-            var result = _context.Naplok
-                .Where(n => n.Datum.Year == 2022
-                         && n.Intenzitas >= 2.0
-                         && n.Intenzitas <= 3.0)
-                .OrderBy(n => n.Datum)
-                .Select(n => new Feladat5ViewModel
-                {
-                    Nev = n.Telepules!.Nev,
-                    Datum = n.Datum,
-                    Intenzitas = n.Intenzitas
-                })
-                .ToList();
-
+            var result = _queries.AligErzekelheto2022().ToList();
             return View(result);
         }
 

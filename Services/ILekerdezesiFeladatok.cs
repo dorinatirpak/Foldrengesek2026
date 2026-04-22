@@ -7,5 +7,6 @@ namespace Földrengések2026.Services
         IQueryable<string> SomogyTelepulesNevek();
         IQueryable<Feladat3ViewModel> VarmegyeiRengesSzamok();
         Feladat4ViewModel? LegnagyobbMagnitudo();
+        IQueryable<Feladat5ViewModel> AligErzekelheto2022();
     }
 }
