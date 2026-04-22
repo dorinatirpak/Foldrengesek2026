@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Földrengések2026.ViewModels.Feladat5ViewModel>
+
+@{
+    ViewData["Title"] = "5. feladat";
+}
+
+<h1>Alig érzékelhető földrengések (2022)</h1>
+
+<ul class="list-group mt-3 mb-4 w-50">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item">
+            <strong>@item.Nev:</strong> @item.Datum.ToString("yyyy-MM-dd") 
+            <span class="text-muted">(intenzitás: @item.Intenzitas)</span>
+        </li>
+    }
+</ul>
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Vissza a feladatokhoz</a>
+</p>

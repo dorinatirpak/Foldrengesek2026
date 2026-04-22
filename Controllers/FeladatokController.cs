@@ -64,5 +64,40 @@ namespace Földrengések2026.Controllers
 
             return View(result);
         }
+
+        public IActionResult Feladat5()
+        {
+            var result = _context.Naplok
+                .Where(n => n.Datum.Year == 2022
+                         && n.Intenzitas >= 2.0
+                         && n.Intenzitas <= 3.0)
+                .OrderBy(n => n.Datum)
+                .Select(n => new Feladat5ViewModel
+                {
+                    Nev = n.Telepules!.Nev,
+                    Datum = n.Datum,
+                    Intenzitas = n.Intenzitas
+                })
+                .ToList();
+
+            return View(result);
+        }
+
+        public IActionResult Feladat6()
+        {
+            var results = _context.Naplok
+                .Where(n => n.Intenzitas > 3)
+                .GroupBy(n => n.Datum.Year)
+                .Select(g => new Feladat6ViewModel
+                {
+                    Year = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(g => g.Count)
+                .Take(3)
+                .ToList();
+
+            return View(results);
+        }
     }
 }

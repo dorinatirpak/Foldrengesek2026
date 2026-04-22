@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Földrengések2026.ViewModels.Feladat6ViewModel>
+
+@{
+    ViewData["Title"] = "6. feladat";
+}
+
+<h1>Legtöbb nagyobb földrengést tartalmazó évek</h1>
+
+<table class="table table-striped mt-3 mb-4 w-50">
+    <thead class="table-dark">
+        <tr>
+            <th>Év</th>
+            <th>Földrengésszám</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Year</td>
+                <td>@item.Count db</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Vissza a feladatokhoz</a>
+</p>
