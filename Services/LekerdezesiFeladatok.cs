@@ -59,5 +59,19 @@ namespace Földrengések2026.Services
                     x.Intenzitas <= 3.0)
                 .OrderBy(x => x.Datum);
         }
+
+        public IQueryable<Feladat6ViewModel> Top3Ev_3nalNagyobbIntenzitassal()
+        {
+            return _context.Naplok
+                .Where(n => n.Intenzitas > 3.0)
+                .GroupBy(n => n.Datum.Year)
+                .Select(g => new Feladat6ViewModel
+                {
+                    Year = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(3);
+        }
     }
 }
