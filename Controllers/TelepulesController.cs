@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Földrengések2026.Data;
 using Földrengések2026.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Földrengések2026.Controllers
 {
@@ -83,6 +84,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -91,6 +93,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (ModelState.IsValid)
@@ -103,6 +106,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,6 +125,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (id != telepules.ID)
@@ -152,6 +157,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -172,6 +178,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var telepules = await _context.Telepulesek.FindAsync(id);

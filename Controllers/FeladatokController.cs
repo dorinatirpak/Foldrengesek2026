@@ -3,9 +3,11 @@ using Földrengések2026.Services;
 using Földrengések2026.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Földrengések2026.Controllers
 {
+    [Authorize]
     public class FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries) : Controller
     {
         private readonly FoldrengesContext _context = context;

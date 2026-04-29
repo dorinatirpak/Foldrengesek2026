@@ -21,9 +21,12 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 
 <form asp-action="Index" method="get">
     <p>
@@ -123,6 +126,9 @@
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+                <td>
+                    <partial name="_CrudLinks" model="@item.ID" />
                 </td>
             </tr>
         }

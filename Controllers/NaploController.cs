@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Földrengések2026.Data;
 using Földrengések2026.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Földrengések2026.Controllers
 {
+    [Authorize]
     public class NaploController : Controller
     {
         private readonly FoldrengesContext _context;
@@ -20,6 +22,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo
+        [AllowAnonymous]
         public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? minMagnitudo, double? maxMagnitudo, string sort = "datum", string dir = "desc", int page = 1)
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
@@ -93,6 +96,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

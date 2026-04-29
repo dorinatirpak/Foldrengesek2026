@@ -480,3 +480,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Identity adatbázis ignorálása
+Data/identity.db
+Data/Identity.db

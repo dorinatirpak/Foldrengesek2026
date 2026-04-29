@@ -1,6 +1,7 @@
 using Földrengések2026.Data;
 using Microsoft.EntityFrameworkCore;
 using Földrengések2026.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Földrengések2026
 {
@@ -15,6 +16,19 @@ namespace Földrengések2026
             builder.Services.AddDbContext<FoldrengesContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
             builder.Services.AddScoped<ILekerdezesiFeladatok, LekerdezesiFeladatok>();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddRazorPages(); // Identity UI-hoz kell
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,7 +41,7 @@ namespace Földrengések2026
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
@@ -35,7 +49,7 @@ namespace Földrengések2026
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
-
+            app.MapRazorPages();
             app.Run();
         }
     }
