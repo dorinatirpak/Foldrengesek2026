@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Földrengések2026.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User,Admin")]
     public class FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries) : Controller
     {
         private readonly FoldrengesContext _context = context;

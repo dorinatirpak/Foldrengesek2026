@@ -21,6 +21,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string? nev, string? varmegye, int page = 1, string sort = "nev", string dir = "asc")
         {
             var telepulesek = _context.Telepulesek.AsQueryable();
@@ -66,6 +67,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -84,7 +86,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Create
-        [Authorize]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             return View();
@@ -93,7 +95,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Create([Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (ModelState.IsValid)
@@ -106,7 +108,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Edit/5
-        [Authorize]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -125,7 +127,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (id != telepules.ID)
@@ -157,7 +159,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Telepules/Delete/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -178,7 +180,7 @@ namespace Földrengések2026.Controllers
         // POST: Telepules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var telepules = await _context.Telepulesek.FindAsync(id);

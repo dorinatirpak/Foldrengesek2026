@@ -7,7 +7,8 @@ namespace Földrengések2026
 {
     public class Program
     {
-        public static void Main(string[] args)
+        // A 'void' módosítva 'async Task'-ra a seeder miatt
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +19,12 @@ namespace Földrengések2026
             builder.Services.AddScoped<ILekerdezesiFeladatok, LekerdezesiFeladatok>();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
             builder.Services.AddRazorPages(); // Identity UI-hoz kell
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -50,6 +52,10 @@ namespace Földrengések2026
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
             app.MapRazorPages();
+
+            // Adatbázis seeder meghívása az app.Run() előtt
+            await IdentitySeed.SeedAsync(app.Services);
+
             app.Run();
         }
     }

@@ -92,7 +92,7 @@ namespace Földrengések2026.Controllers
                 telepulesid ?? 0
             );
 
-            return View(items); 
+            return View(items);
         }
 
         // GET: Naplo/Details/5
@@ -116,6 +116,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo/Create
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             ViewData["TelepulesID"] = new SelectList(_context.Telepulesek, "ID", "Nev");
@@ -123,10 +124,9 @@ namespace Földrengések2026.Controllers
         }
 
         // POST: Naplo/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Create([Bind("ID,Datum,Ido,Magnitudo,Intenzitas,TelepulesID")] Naplo naplo)
         {
             if (ModelState.IsValid)
@@ -140,6 +140,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo/Edit/5
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -157,10 +158,9 @@ namespace Földrengések2026.Controllers
         }
 
         // POST: Naplo/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Datum,Ido,Magnitudo,Intenzitas,TelepulesID")] Naplo naplo)
         {
             if (id != naplo.ID)
@@ -193,6 +193,7 @@ namespace Földrengések2026.Controllers
         }
 
         // GET: Naplo/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -214,6 +215,7 @@ namespace Földrengések2026.Controllers
         // POST: Naplo/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var naplo = await _context.Naplok.FindAsync(id);
